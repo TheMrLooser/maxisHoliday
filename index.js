@@ -11,8 +11,6 @@ const cors = require('cors')
 
 const app = express()
 app.use(express.json())
-app.use("/client",clientRouter);
-app.use("/employee",employeeRouter);
 app.use(cors({
     origin:'http://localhost:3000',
     methods: ['GET', 'PUT', 'POST','DELETE'], 
@@ -21,6 +19,9 @@ app.use(cors({
     maxAge: 600, 
     exposedHeaders: ['*', 'Authorization' ] 
 }))
+app.use("/client",clientRouter);
+app.use("/employee",employeeRouter);
+
 
 connectDB()
 app.listen(process.env.PORT,()=>{
