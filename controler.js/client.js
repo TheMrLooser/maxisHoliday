@@ -114,4 +114,10 @@ const deleteClient = async(req,res,next)=>{
         return res.status(404).send(error)
     }
 }
-module.exports  = {RegisterNewClient,LoginClient,getSingleClient,getAllClients,UpdateClientDetaile ,deleteClient}
+
+
+
+ 
+
+
+module.exports  = {RegisterNewClient,LoginClient,getSingleClient,getAllClients,UpdateClientDetaile ,deleteClient }

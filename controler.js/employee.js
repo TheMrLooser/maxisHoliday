@@ -101,4 +101,11 @@ const deleteEmployee = async(req,res,next)=>{
         return res.status(404).send(error)
     }
 }
-module.exports  = {RegisterNewEmployee,LoginEmployee,getAllEmployee,getSingleEmployee,UpdateEmployeeDetaile ,deleteEmployee}
+
+ 
+
+
+
+
+
+module.exports  = {RegisterNewEmployee,LoginEmployee,getAllEmployee,getSingleEmployee,UpdateEmployeeDetaile ,deleteEmployee }
