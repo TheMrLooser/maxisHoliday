@@ -1,4 +1,5 @@
 const  clientSchema = require("../model/clientSchema")
+const employee = require("../model/employee")
 
 
 
@@ -8,7 +9,7 @@ const LoginWithCookie = async(req,res,next)=>{
         const getCookie = await req.cookies.access_token
         if(getCookie){
             const getClient = await clientSchema.findOne({token:getCookie})
-            const getEmployee = await userSchema.findOne({token:getCookie})
+            const getEmployee = await employee.findOne({token:getCookie})
 
             if(getClient){
                return res.status(200).send( getClient)    
