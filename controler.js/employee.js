@@ -10,7 +10,7 @@ const RegisterNewEmployee = async(req,res,next)=>{
         const check = await EmployeeSchema.findOne({phone:req.body.phone});
         if(!check){
             const phone = req.body.phone;
-            const  hashPassword  = await bcrypt.hash(phone,10);
+            const  hashPassword  = await bcrypt.hash(phone.toString(),10);
             const genrateUserId = randomstring.generate(
                 {
                     length: 3,
@@ -90,8 +90,9 @@ const UpdateEmployeeDetaile = async(req,res,next)=>{
 }
 
 const deleteEmployee = async(req,res,next)=>{
-    try {
-        const checkEmployee = await EmployeeSchema.findOne({employeeId:req.body.employeeId});
+    try { 
+
+        const checkEmployee = await EmployeeSchema.findOne({employeeId:req.params.employeeId});
         if(checkEmployee){ 
             await EmployeeSchema.findByIdAndDelete(checkEmployee._id);
             return res.status(200).send(`Employee "${checkEmployee.name}" deleted!`)

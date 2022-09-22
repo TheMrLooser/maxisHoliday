@@ -9,12 +9,10 @@ const employeeSchema = new mongoose.Schema({
         type:String,
         required:true,
         validate:validator.isEmail,
-        unique:true
     },
     phone:{
         type:Number,
         required:true,
-        unique:true
     },
     employeeId:{
         type:String
@@ -38,6 +36,12 @@ const employeeSchema = new mongoose.Schema({
     clients:{
         type:Array,
         default:[]
+    },
+    state:{
+        type:String
+     },
+    city:{
+        type:String
     },
     role:{
         type:String,

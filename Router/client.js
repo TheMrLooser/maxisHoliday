@@ -11,6 +11,7 @@ clientRouter.get('/get-all-client',getAllClients)
 clientRouter.put('/update-client',UpdateClientDetaile)
 clientRouter.delete('/delete-client',deleteClient)
 
-clientRouter.get('/login-by-cookie', LoginWithCookie)
+clientRouter.get('/login-by-cookies', LoginWithCookie)
 clientRouter.get('/logout', LogOut)
-module.exports = clientRouter
+
+module.exports = clientRouter  

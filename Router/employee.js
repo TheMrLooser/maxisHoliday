@@ -8,6 +8,6 @@ employeeRouter.post('/login-employee',LoginEmployee)
 employeeRouter.get('/get-single-employee',getSingleEmployee)
 employeeRouter.get('/get-all-employee',getAllEmployee)
 employeeRouter.put('/update-employee',UpdateEmployeeDetaile)
-employeeRouter.delete('/delete-employee',deleteEmployee)
+employeeRouter.delete('/delete-employee/:employeeId',deleteEmployee)
 
 module.exports = employeeRouter

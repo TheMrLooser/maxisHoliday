@@ -9,12 +9,10 @@ const clientSchema = new mongoose.Schema({
         type:String,
         required:true,
         validate:validator.isEmail,
-        unique:true
     },
     phone:{
         type:Number,
         required:true,
-        unique:true
     },
     address:{
         type:String,
@@ -71,6 +69,9 @@ const clientSchema = new mongoose.Schema({
     },
     membershipYear:{
         type:Number
+    },
+    membershipType:{
+        type:String
     },
     totalAllowedDays:{
         type:Number,

@@ -6,7 +6,7 @@ const employee = require("../model/employee")
 
 const LoginWithCookie = async(req,res,next)=>{
     try {
-        const getCookie = await req.cookies.access_token
+        const getCookie = req.cookies.access_token
         if(getCookie){
             const getClient = await clientSchema.findOne({token:getCookie})
             const getEmployee = await employee.findOne({token:getCookie})
@@ -15,7 +15,7 @@ const LoginWithCookie = async(req,res,next)=>{
                return res.status(200).send( getClient)    
             }
             else if(getEmployee){
-               return res.status(200).send( getEmployee)    
+               return res.status(200).send( getEmployee)     
             }
 
             return res.status(404).send( "Cookie expires login again") 
