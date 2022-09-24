@@ -41,6 +41,9 @@ const clientSchema = new mongoose.Schema({
     membershipNumber:{
         type:String
     },
+    invoiceNumber:{
+        type:String
+    },
     salesEmployeeId:{
         type:String
     },

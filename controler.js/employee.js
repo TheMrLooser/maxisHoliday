@@ -36,7 +36,7 @@ const LoginEmployee = async(req,res,next)=>{
             const password = req.body.password;
             const checkPassword  = await bcrypt.compare(password,check.password);
             if(checkPassword){
-                const token = jwt.sign({id:check.phone},process.env.SECRET_KEY)
+                const token = jwt.sign({id:check._id},process.env.SECRET_KEY)
                 res.cookie("access_token",token,{secure: true,sameSite: 'none',httpOnly:true}).status(200)
                 await EmployeeSchema.findByIdAndUpdate(check._id,{$set:{token:token}}) 
                 const {password,...others} = check._doc

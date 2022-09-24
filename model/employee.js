@@ -46,8 +46,11 @@ const employeeSchema = new mongoose.Schema({
     role:{
         type:String,
         default:'Employee'
+    },
+    token:{
+        type:String
     }
-    
+
 
 },{timestamps:true});
 
