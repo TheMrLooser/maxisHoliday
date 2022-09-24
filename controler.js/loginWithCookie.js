@@ -29,9 +29,11 @@ const LoginWithCookie = async(req,res,next)=>{
 const LogOut = (req,res,next)=>{
     res.cookie("access_token",null,{
         expires:new Date(Date.now()),
-        httpOnly:true
+        httpOnly:true,
+        secure: true,
+        sameSite: 'none'
     })
-    res.status(200).send("Loged out successfull")
+    res.status(200).send("Loged out ")
 }
 
 
