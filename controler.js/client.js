@@ -128,7 +128,7 @@ const UpdateClientDetaile = async(req,res,next)=>{
 
 const deleteClient = async(req,res,next)=>{
     try {
-        const checkClient = await clientSchema.findOne({clientId:req.body.clientId});
+        const checkClient = await clientSchema.findOne({clientId:req.params.clientId});
         if(checkClient){
             await clientSchema.findByIdAndDelete(checkClient._id);
             return res.status(200).send(`Client "${checkClient.name}" deleted!`)
