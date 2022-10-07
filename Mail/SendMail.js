@@ -1,6 +1,10 @@
 const nodemaler = require('nodemailer');
 const path = require('path')
 var hbs = require('nodemailer-express-handlebars');
+var hbs_2 = require('handlebars')
+const puppeteer = require("puppeteer");
+const fs = require('fs-extra');
+// const emailBody = require('../views/email.hbs')
 
 
 const SendMail = async(req,res,next)=>{
@@ -36,7 +40,31 @@ const SendMail = async(req,res,next)=>{
 }
 
 
+const Converter = async (templateName , data)=>{
+  try {
+      const browser = await puppeteer.launch()
+      const page = await browser.newPage()
+      const filePath = path.join(__dirname,"../views/email.hbs")
 
+      const html = await fs.readFile(filePath,'utf8');
+      const file = hbs_2.compile(html)(data)
+
+      await page.setContent( file)
+
+      await page.pdf({
+          path: 'welcome.pdf',
+          format: 'A4',
+          printBackground: true
+      })
+      // console.log("done creating pdf")
+      await browser.close()
+      // process.exit()
+
+  } catch (error) {
+    console.log(error)
+    
+  }
+}
 
 const sendDefaltMail = async(req,res,next)=>{
     try {
@@ -44,6 +72,10 @@ const sendDefaltMail = async(req,res,next)=>{
           to,clientId,name,email,phone,netAmount,membershipYear ,salesEmployeeId,AMC,membershipType,dateOfJoining
         
         } = req.body;
+
+         // converting html to pdf
+         await Converter('email',req.body)
+
         var transporter = nodemaler.createTransport({
             service:"gmail",
             auth:{
@@ -54,12 +86,12 @@ const sendDefaltMail = async(req,res,next)=>{
           
           const handlebarOptions = {
             viewEngine: {
-              extName: ".handlebars",
+              extName: ".hbs",
               partialsDir: path.resolve('./views'),
               defaultLayout: false,
             },
             viewPath: path.resolve('./views'),
-            extName: ".handlebars",
+            extName: ".hbs",
           }
           
           transporter.use('compile', hbs(handlebarOptions));
@@ -67,25 +99,28 @@ const sendDefaltMail = async(req,res,next)=>{
           var mailOptions = {
             from: process.env.EMAIL,
             to: to,
-            subject: 'Sending Email using Node.js',
-            template: 'email',
+            subject: 'Welcome to maxisholidays',
+            template: 'emailText',
             context: {
-              clientId:clientId,
               name: name,
-              email:email,
-              phone:phone,
-              membershipYear:membershipYear,
-              netAmount:netAmount?netAmount:'N/A',
-              salesEmployeeId:salesEmployeeId?salesEmployeeId:'N/A',
-              AMC:AMC?AMC:'N/A',
-              membershipType:membershipType?membershipType:'N/A',
-              dateOfJoining:dateOfJoining?dateOfJoining:'N/A',
+              comp_phone:1204955466 ,
+              comp_email:'booking@maxisholidays.com',
+               
+            },
+            attachments:[
+              { 
+              path:'./welcome.pdf'
             }
+            ]
              
 
           
           };
           
+         
+
+
+
           transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
               console.log(error);

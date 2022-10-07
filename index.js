@@ -8,6 +8,7 @@ dotenv.config({path:'config/config.env'})
 const cors = require('cors')
 const cookieParser = require("cookie-parser");
 const requestHoliday = require('./Router/requestHoliday');
+const countriesDataRouter = require('./Router/sendCountryData');
 
 
 const app = express()
@@ -24,6 +25,7 @@ app.use(cors({
 app.use("/client",clientRouter);
 app.use("/employee",employeeRouter);
 app.use("/holidays",requestHoliday);
+app.use("/api",countriesDataRouter);
 
 
 connectDB()
