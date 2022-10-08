@@ -76,7 +76,7 @@ const sendDefaltMail = async (req,res,next)=>{
         } = req.body;
 
          // converting html to pdf
-        await  Converter('email',req.body)
+        // await  Converter('email',req.body)
 
         var transporter = nodemaler.createTransport({
             service:"gmail",
