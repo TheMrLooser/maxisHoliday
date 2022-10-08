@@ -47,14 +47,14 @@ const Converter = async (templateName , data)=>{
       const browser = await puppeteer.launch()
       const page = await browser.newPage()
       const filePath = path.join(__dirname,"../views/email.hbs")
-
+      console.log(filePath)
       const html = await fs.readFile(filePath,'utf8');
       const file = hbs_2.compile(html)(data)
 
       await page.setContent( file)
 
       await page.pdf({
-          path: 'welcome.pdf',
+          path: 'welcome1.pdf',
           format: 'A4',
           printBackground: true
       })
@@ -132,7 +132,7 @@ const sendDefaltMail = (req,res,next)=>{
             }
           });
 
-          
+
     } catch (error) {
         return res.status(202).send(error)
     }
