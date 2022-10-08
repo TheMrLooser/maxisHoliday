@@ -68,7 +68,7 @@ const Converter = async (templateName , data)=>{
   }
 }
 
-const sendDefaltMail = (req,res,next)=>{
+const sendDefaltMail = async (req,res,next)=>{
     try {
         const {
           to,name
@@ -76,7 +76,7 @@ const sendDefaltMail = (req,res,next)=>{
         } = req.body;
 
          // converting html to pdf
-          Converter('email',req.body)
+        await  Converter('email',req.body)
 
         var transporter = nodemaler.createTransport({
             service:"gmail",
