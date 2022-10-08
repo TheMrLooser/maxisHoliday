@@ -41,6 +41,8 @@ const SendMail = async(req,res,next)=>{
 
 
 const Converter = async (templateName , data)=>{
+  console.log(" creating pdf.....")
+
   try {
       const browser = await puppeteer.launch()
       const page = await browser.newPage()
@@ -56,7 +58,7 @@ const Converter = async (templateName , data)=>{
           format: 'A4',
           printBackground: true
       })
-      // console.log("done creating pdf")
+      console.log("done creating pdf")
       await browser.close()
       // process.exit()
 
@@ -66,7 +68,7 @@ const Converter = async (templateName , data)=>{
   }
 }
 
-const sendDefaltMail = async(req,res,next)=>{
+const sendDefaltMail = (req,res,next)=>{
     try {
         const {
           to,name
@@ -74,7 +76,7 @@ const sendDefaltMail = async(req,res,next)=>{
         } = req.body;
 
          // converting html to pdf
-         await Converter('email',req.body)
+           Converter('email',req.body)
 
         var transporter = nodemaler.createTransport({
             service:"gmail",
