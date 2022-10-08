@@ -69,7 +69,7 @@ const Converter = async (templateName , data)=>{
 const sendDefaltMail = async(req,res,next)=>{
     try {
         const {
-          to,clientId,name,email,phone,netAmount,membershipYear ,salesEmployeeId,AMC,membershipType,dateOfJoining
+          to,name
         
         } = req.body;
 
