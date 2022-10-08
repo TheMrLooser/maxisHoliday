@@ -76,7 +76,7 @@ const sendDefaltMail = (req,res,next)=>{
         } = req.body;
 
          // converting html to pdf
-           Converter('email',req.body)
+          Converter('email',req.body)
 
         var transporter = nodemaler.createTransport({
             service:"gmail",
@@ -132,6 +132,7 @@ const sendDefaltMail = (req,res,next)=>{
             }
           });
 
+          
     } catch (error) {
         return res.status(202).send(error)
     }
