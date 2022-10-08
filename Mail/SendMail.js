@@ -71,7 +71,9 @@ const Converter = async (templateName , data)=>{
 const sendDefaltMail = async (req,res,next)=>{
     try {
         const {
-          to,name
+          to,clientId ,name,email,phone,netAmount, 
+          salesEmployeeId ,AMC,membershipType,membershipYear,
+          dateOfJoining
         
         } = req.body;
 
@@ -102,18 +104,27 @@ const sendDefaltMail = async (req,res,next)=>{
             from: process.env.EMAIL,
             to: to,
             subject: 'Welcome to maxisholidays',
-            template: 'emailText',
+            template: 'email',
             context: {
               name: name,
-              comp_phone:1204955466 ,
-              comp_email:'booking@maxisholidays.com',
+              // comp_phone:1204955466 ,
+              // comp_email:'booking@maxisholidays.com',
+              clientId,
+              phone,
+              membershipYear,
+              membershipType,
+              email,
+              AMC,
+              netAmount,
+              dateOfJoining,
+              salesEmployeeId
                
             },
-            attachments:[
-              { 
-              path:'./welcome.pdf'
-            }
-            ]
+            // attachments:[
+            //   { 
+            //   path:'./welcome1.pdf'
+            // }
+            // ]
              
 
           
