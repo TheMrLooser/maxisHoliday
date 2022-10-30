@@ -32,7 +32,7 @@ const RegisterNewClient = async(req,res,next)=>{
                 }
             ); 
             const clientID = `MHC${genrateUserId}` 
-            const  balanceAmount = 0;
+            let  balanceAmount = 0;
             if(paidAmount){
                 balanceAmount = membershipAmount-paidAmount
             }
