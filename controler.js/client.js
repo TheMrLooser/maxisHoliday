@@ -18,6 +18,8 @@ const RegisterNewClient = async(req,res,next)=>{
     try{
         const check = await clientSchema.findOne({phone:req.body.phone});
         const salesEmployee = await employee.findOne({employeeId:req.body.salesEmployeeId})
+        const paidAmount = req.body.paidAmount
+        const membershipAmount = req.body.netAmount
         if(!check && salesEmployee){
             const phone = req.body.phone;
             const membershipYear = req.body.membershipYear
@@ -30,7 +32,12 @@ const RegisterNewClient = async(req,res,next)=>{
                 }
             ); 
             const clientID = `MHC${genrateUserId}` 
-            const newUser = new clientSchema({...req.body, password:hashPassword,clientId:clientID, totalAllowedDays:getTotalAllowedDaysAndNight.allowedDays,totalAllowedNights:getTotalAllowedDaysAndNight.allowedNight ,balanceDays:getTotalAllowedDaysAndNight.allowedDays,balanceNight:getTotalAllowedDaysAndNight.allowedNight});
+            const  balanceAmount = 0;
+            if(paidAmount){
+                balanceAmount = membershipAmount-paidAmount
+            }
+
+            const newUser = new clientSchema({...req.body,balanceAmount,paidAmount, password:hashPassword,clientId:clientID, totalAllowedDays:getTotalAllowedDaysAndNight.allowedDays,totalAllowedNights:getTotalAllowedDaysAndNight.allowedNight ,balanceDays:getTotalAllowedDaysAndNight.allowedDays,balanceNight:getTotalAllowedDaysAndNight.allowedNight});
             await newUser.save();
             await employee.findByIdAndUpdate(salesEmployee._id,{$push:{clients:clientID}})
             const sendData = {clientId:clientID,password:phone,totalAllowedDays:getTotalAllowedDaysAndNight.allowedDays,totalAllowedNights:getTotalAllowedDaysAndNight.allowedNight}
@@ -100,11 +107,11 @@ const UpdateClientDetaile = async(req,res,next)=>{
             if(usingHolidayPackage){
                 const usedDays = parseInt(usingHolidayPackage.Days, 10);
                 const usedNight = parseInt(usingHolidayPackage.Nights, 10)
-                const oneDayPrice = parseInt(usingHolidayPackage.OneDayPrice, 10)
+                // const oneDayPrice = parseInt(usingHolidayPackage.OneDayPrice, 10)
                 const balanceDays = checkClient.totalAllowedDays - usedDays
                 const balanceNight = checkClient.totalAllowedNights - usedNight
-                const balanceAmount = (checkClient.netAmount)-((usedDays+usedNight)*oneDayPrice)
-                await clientSchema.findByIdAndUpdate(checkClient._id,{$set:{ usedDays,usedNight,balanceDays, balanceNight,balanceAmount,paidAmount:checkClient.netAmount-balanceAmount}});
+                // const balanceAmount = (checkClient.netAmount)-((usedDays+usedNight)*oneDayPrice)
+                await clientSchema.findByIdAndUpdate(checkClient._id,{$set:{ usedDays,usedNight,balanceDays, balanceNight}});
                 await clientSchema.findByIdAndUpdate(checkClient._id,{$push:{usingHolidayPackage}});
                 return res.status(200).send("Booking Registered ")
                 
