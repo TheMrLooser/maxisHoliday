@@ -161,7 +161,7 @@ const clientSchema = new mongoose.Schema({
     },
     AMCStatus:{
         type:String,
-        default:'Paid'
+        default:"Paid"
     },
     adharcardNumber:{
         type:Number
