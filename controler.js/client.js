@@ -32,11 +32,8 @@ const RegisterNewClient = async(req,res,next)=>{
                 }
             ); 
             const clientID = `MHC${genrateUserId}` 
-            let  balanceAmount = 0;
-            if(paidAmount){
-                balanceAmount = membershipAmount-paidAmount
-            }
-
+            const  balanceAmount = membershipAmount-paidAmount;
+             
             const newUser = new clientSchema({...req.body,balanceAmount,paidAmount, password:hashPassword,clientId:clientID, totalAllowedDays:getTotalAllowedDaysAndNight.allowedDays,totalAllowedNights:getTotalAllowedDaysAndNight.allowedNight ,balanceDays:getTotalAllowedDaysAndNight.allowedDays,balanceNight:getTotalAllowedDaysAndNight.allowedNight});
             await newUser.save();
             await employee.findByIdAndUpdate(salesEmployee._id,{$push:{clients:clientID}})
