@@ -18,8 +18,8 @@ const RegisterNewClient = async(req,res,next)=>{
     try{
         const check = await clientSchema.findOne({phone:req.body.phone});
         const salesEmployee = await employee.findOne({employeeId:req.body.salesEmployeeId})
-        const paidAmount = req.body.paidAmount
-        const membershipAmount = req.body.netAmount
+        const paidAmount = parseInt(req.body.paidAmount,10)
+        const membershipAmount = parseInt(req.body.netAmount,10)
         if(!check && salesEmployee){
             const phone = req.body.phone;
             const membershipYear = req.body.membershipYear
