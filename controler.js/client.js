@@ -142,7 +142,7 @@ const getAllDueAmcClients = async(req,res,next)=>{
                     const clientId = clients[i].id
                     const DueAMC = parseInt( filter.Due)
                     const LastAMCPaidYear = filter.DateOfPaying
-                    // console.log(DueAMC)
+                    // console.log(DueAMC) 
                     if(isIncludeCurrentYear && isPaid){
                         await clientSchema.findByIdAndUpdate(clientId,{$set:{ AMCStatus:"Paid"}});
                         await clientSchema.findByIdAndUpdate(clientId,{$set:{ DueAMC}});
@@ -195,7 +195,7 @@ const UpdateClientDetaile = async(req,res,next)=>{
         const checkClient = await clientSchema.findOne({clientId:req.body.clientId});
         const usingHolidayPackage = req.body.usingHolidayPackage;
         const AmcAmount = req.body.AmcAmount
-
+ 
         if(checkClient){
             const MembershipType = req.body.membershipType
             if(usingHolidayPackage){
