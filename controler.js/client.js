@@ -31,10 +31,21 @@ const RegisterNewClient = async(req,res,next)=>{
                     charset: '1234567890'
                 }
             ); 
+            
             const clientID = `MHC${genrateUserId}` 
             const  balanceAmount = membershipAmount-paidAmount;
-            const newUser = new clientSchema({...req.body,balanceAmount,paidAmount, password:hashPassword,clientId:clientID, totalAllowedDays:getTotalAllowedDaysAndNight.allowedDays,totalAllowedNights:getTotalAllowedDaysAndNight.allowedNight ,balanceDays:getTotalAllowedDaysAndNight.allowedDays,balanceNight:getTotalAllowedDaysAndNight.allowedNight});
+
+            const AMCStatus = req.body.AMCStatus
+            const currentYear = new Date().getFullYear()
+            const AMC = req.body.AMC
+            const PaidAmc = req.body.PaidAmc
+            const DueAMC = AMC-PaidAmc
+            const todaysDate = `${new Date().getDate()}-${new Date().getMonth()}-${new Date().getFullYear()}`
+            const AMCObject = {AMC:AMC,Due:DueAMC,Status:AMCStatus,DateOfPaying:todaysDate ,AMCYear:currentYear}
+
+            const newUser = new clientSchema({...req.body,balanceAmount,paidAmount, password:hashPassword,clientId:clientID, totalAllowedDays:getTotalAllowedDaysAndNight.allowedDays,totalAllowedNights:getTotalAllowedDaysAndNight.allowedNight ,balanceDays:getTotalAllowedDaysAndNight.allowedDays,balanceNight:getTotalAllowedDaysAndNight.allowedNight,AMCList:AMCObject});
             await newUser.save();
+            
             await employee.findByIdAndUpdate(salesEmployee._id,{$push:{clients:clientID}})
             const sendData = {clientId:clientID,password:phone,totalAllowedDays:getTotalAllowedDaysAndNight.allowedDays,totalAllowedNights:getTotalAllowedDaysAndNight.allowedNight}
             return res.status(200).send(sendData)
@@ -91,12 +102,99 @@ const getAllClients = async(req,res,next)=>{
     }
 
 }
+const getAllDueAmountClients = async(req,res,next)=>{
+    try{
+        const clients = await clientSchema.find();
+        let i = 0;
+        const filterClients = []
+        while(clients.length>i){
+            const BalAmou = clients[i].balanceAmount
+            if(BalAmou>0){
+                filterClients.push(clients[i])
+            }
+            i++
+        }
+        return res.status(200).send(filterClients)
+    }catch(error){
+        return res.status(404).send(error)
+    }
+
+}
+const getAllDueAmcClients = async(req,res,next)=>{
+    try{
+        const clients = await clientSchema.find();
+        let i = 0;
+        const filterClients = []
+        while(clients.length>i){
+            const AmcStatus = clients[i].AMCStatus
+            const AmcPaidList = clients[i].AMCList  
+            
+            let j = 0;
+            while(AmcPaidList.length > j){
+                const filter = AmcPaidList!=[] ? AmcPaidList[j]:null
+                if(filter!= undefined){
+                    const Values = Object.values(filter)
+                    const currentYear = new Date().getFullYear()
+                    const Status = "Paid"
+                    const isIncludeCurrentYear = Values.includes(currentYear)
+                    const isPaid = Values.includes(Status)
+                    // console.log(isIncludeCurrentYear , isPaid , Values, currentYear,)
+                    const clientId = clients[i].id
+                    const DueAMC = parseInt( filter.Due)
+                    const LastAMCPaidYear = filter.DateOfPaying
+                    // console.log(DueAMC)
+                    if(isIncludeCurrentYear && isPaid){
+                        await clientSchema.findByIdAndUpdate(clientId,{$set:{ AMCStatus:"Paid"}});
+                        await clientSchema.findByIdAndUpdate(clientId,{$set:{ DueAMC}});
+                        await clientSchema.findByIdAndUpdate(clientId,{$set:{ LastAMCPaidYear}});
+                        
+
+                    }
+                    else if(isIncludeCurrentYear && !isPaid){
+                        await clientSchema.findByIdAndUpdate(clientId,{$set:{ AMCStatus:"Due"}});
+                        await clientSchema.findByIdAndUpdate(clientId,{$set:{ DueAMC}});
+                        await clientSchema.findByIdAndUpdate(clientId,{$set:{ LastAMCPaidYear}});
+
+
+                    }
+                    else if(!isIncludeCurrentYear && !isPaid){
+                        await clientSchema.findByIdAndUpdate(clientId,{$set:{ AMCStatus:"Unpaid"}});
+                        await clientSchema.findByIdAndUpdate(clientId,{$set:{ DueAMC:0}});
+                        await clientSchema.findByIdAndUpdate(clientId,{$set:{ LastAMCPaidYear}});
+
+
+                    }
+                    else{
+                        await clientSchema.findByIdAndUpdate(clientId,{$set:{ AMCStatus:"Unpaid"}});
+                        await clientSchema.findByIdAndUpdate(clientId,{$set:{ DueAMC}});
+                        await clientSchema.findByIdAndUpdate(clientId,{$set:{ LastAMCPaidYear}});
+
+                        
+
+                    }
+                }
+                j++
+            }
+
+             
+            if(AmcStatus=="Unpaid"){ 
+                filterClients.push(clients[i])
+            }
+            i++
+        }
+        return res.status(200).send(filterClients)
+    }catch(error){
+        return res.status(404).send(error)
+    }
+
+}
 
 const UpdateClientDetaile = async(req,res,next)=>{
     try {
 
         const checkClient = await clientSchema.findOne({clientId:req.body.clientId});
         const usingHolidayPackage = req.body.usingHolidayPackage;
+        const AmcAmount = req.body.AmcAmount
 
         if(checkClient){
             const MembershipType = req.body.membershipType
@@ -118,6 +216,18 @@ const UpdateClientDetaile = async(req,res,next)=>{
                 await clientSchema.findByIdAndUpdate(checkClient._id,{$set:{membershipType:MembershipType,membershipYear:newMembershipYear,totalAllowedDays:getTotalAllowedDaysAndNight.allowedDays, totalAllowedNights:getTotalAllowedDaysAndNight.allowedNight }})
                 
                 return res.status(200).send("New Package Updated")
+            }
+            else if(AmcAmount){
+               
+                // const currentYear = new Date().getFullYear()
+                const AMC = checkClient.AMC
+                const DueAMC = AMC-AmcAmount
+                const Status = DueAMC>0?"Due":"Paid"
+                const AMCYear = parseInt(req.body.AMCYear)
+                const todaysDate = `${new Date().getDate()}-${new Date().getMonth()}-${new Date().getFullYear()}`
+                const AMCObject = {AMC:AMC,Due:DueAMC,Status:Status,DateOfPaying:todaysDate ,AMCYear:AMCYear}
+                await clientSchema.findByIdAndUpdate(checkClient._id,{$push:{AMCList:AMCObject}});
+ 
             }
             await clientSchema.findByIdAndUpdate(checkClient._id,{$set:{...req.body}});
             return res.status(200).send("Client Updated")
@@ -147,4 +257,4 @@ const deleteClient = async(req,res,next)=>{
  
 
 
-module.exports  = {RegisterNewClient,LoginClient,getSingleClient,getAllClients,UpdateClientDetaile ,deleteClient }
+module.exports  = {RegisterNewClient,LoginClient,getSingleClient,getAllClients,UpdateClientDetaile ,deleteClient ,getAllDueAmountClients,getAllDueAmcClients}

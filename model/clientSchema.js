@@ -163,6 +163,18 @@ const clientSchema = new mongoose.Schema({
         type:String,
         default:"Paid"
     },
+    AMCList:{
+        type:Array,
+        default:[] 
+    },
+    DueAMC:{
+        type:Number,
+        default:0
+    },
+    LastAMCPaidYear:{
+        type:String,
+        
+    },
     adharcardNumber:{
         type:Number
 
