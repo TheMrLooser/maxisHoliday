@@ -195,7 +195,7 @@ const UpdateClientDetaile = async(req,res,next)=>{
         const checkClient = await clientSchema.findOne({clientId:req.body.clientId});
         const usingHolidayPackage = req.body.usingHolidayPackage;
         const AmcAmount = req.body.AmcAmount
- 
+        const PMA = parseInt(req.body.DMA)
         if(checkClient){
             const MembershipType = req.body.membershipType
             if(usingHolidayPackage){
@@ -228,6 +228,19 @@ const UpdateClientDetaile = async(req,res,next)=>{
                 const AMCObject = {AMC:AMC,Due:DueAMC,Status:Status,DateOfPaying:todaysDate ,AMCYear:AMCYear}
                 await clientSchema.findByIdAndUpdate(checkClient._id,{$push:{AMCList:AMCObject}});
  
+            }
+
+            else if(PMA){
+                // console.log("working")
+                const paidAmount = parseInt(checkClient.paidAmount + PMA)
+                // console.log(paidAmount , typeof(paidAmount) ,PMA)
+
+                const balanceAmount = parseInt(checkClient.netAmount-paidAmount)
+                // console.log(balanceAmount , typeof(balanceAmount))
+
+                await clientSchema.findByIdAndUpdate(checkClient._id,{$set:{paidAmount ,balanceAmount}})
+                // console.log("working perfect")
+                
             }
             await clientSchema.findByIdAndUpdate(checkClient._id,{$set:{...req.body}});
             return res.status(200).send("Client Updated")
