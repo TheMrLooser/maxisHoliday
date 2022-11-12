@@ -27,7 +27,7 @@ const RegisterNewClient = async(req,res,next)=>{
             const  hashPassword  = await bcrypt.hash(phone.toString(),10);
             const genrateUserId = randomstring.generate(
                 {
-                    length: 3,
+                    length: 3, 
                     charset: '1234567890'
                 }
             ); 
@@ -43,7 +43,7 @@ const RegisterNewClient = async(req,res,next)=>{
             const todaysDate = `${new Date().getDate()}-${new Date().getMonth()}-${new Date().getFullYear()}`
             const AMCObject = {AMC:AMC,Due:DueAMC,Status:AMCStatus,DateOfPaying:todaysDate ,AMCYear:currentYear}
 
-            const newUser = new clientSchema({...req.body,balanceAmount,paidAmount, password:hashPassword,clientId:clientID, totalAllowedDays:getTotalAllowedDaysAndNight.allowedDays,totalAllowedNights:getTotalAllowedDaysAndNight.allowedNight ,balanceDays:getTotalAllowedDaysAndNight.allowedDays,balanceNight:getTotalAllowedDaysAndNight.allowedNight,AMCList:AMCObject});
+            const newUser = new clientSchema({...req.body,balanceAmount,paidAmount, password:hashPassword,clientId:clientID, totalAllowedDays:getTotalAllowedDaysAndNight.allowedDays,totalAllowedNights:getTotalAllowedDaysAndNight.allowedNight ,balanceDays:getTotalAllowedDaysAndNight.allowedDays,balanceNight:getTotalAllowedDaysAndNight.allowedNight,AMCList:AMCObject , DueAMC});
             await newUser.save();
             
             await employee.findByIdAndUpdate(salesEmployee._id,{$push:{clients:clientID}})
@@ -177,11 +177,12 @@ const getAllDueAmcClients = async(req,res,next)=>{
             }
 
              
-            if(AmcStatus=="Unpaid"){ 
+            if(AmcStatus=="Unpaid" || AmcStatus=="Due"){ 
                 filterClients.push(clients[i])
             }
             i++
         }
+
         return res.status(200).send(filterClients)
     }catch(error){
         return res.status(404).send(error)
@@ -221,12 +222,13 @@ const UpdateClientDetaile = async(req,res,next)=>{
                
                 // const currentYear = new Date().getFullYear()
                 const AMC = checkClient.AMC
-                const DueAMC = AMC-AmcAmount
+                const DueAMC = checkClient.DueAMC - AmcAmount
                 const Status = DueAMC>0?"Due":"Paid"
+                console.log(DueAMC)
                 const AMCYear = parseInt(req.body.AMCYear)
                 const todaysDate = `${new Date().getDate()}-${new Date().getMonth()}-${new Date().getFullYear()}`
                 const AMCObject = {AMC:AMC,Due:DueAMC,Status:Status,DateOfPaying:todaysDate ,AMCYear:AMCYear}
-                await clientSchema.findByIdAndUpdate(checkClient._id,{$push:{AMCList:AMCObject}});
+                await clientSchema.findByIdAndUpdate(checkClient._id,{$push:{AMCList:AMCObject},$set:{DueAMC:DueAMC}});
  
             }
 
