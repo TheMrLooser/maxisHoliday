@@ -6,18 +6,18 @@ const puppeteer = require("puppeteer");
 const fs = require('fs-extra');
 // const emailBody = require('../views/email.hbs')
 
-
+ 
 const SendMail = async(req,res,next)=>{
     try {
         const {message,to,subject} = req.body;
 
         const transpoter = nodemaler.createTransport({
             service:"gmail",
-            auth:{
+            auth:{  
                 user:process.env.EMAIL,
-                pass:process.env.PASSWORD
+                pass:process.env.PASSWORD   
             }
-        })
+        })  
 
         const mailOptions = {
             from:process.env.EMAIL,
@@ -40,33 +40,6 @@ const SendMail = async(req,res,next)=>{
 }
 
 
-const Converter = async (templateName , data)=>{
-  console.log(" creating pdf.....")
-
-  try {
-      const browser = await puppeteer.launch()
-      const page = await browser.newPage()
-      const filePath = path.join(__dirname,"../views/email.hbs")
-      console.log(filePath)
-      const html = await fs.readFile(filePath,'utf8');
-      const file = hbs_2.compile(html)(data)
-
-      await page.setContent( file)
-
-      await page.pdf({
-          path: 'welcome1.pdf',
-          format: 'A4',
-          printBackground: true
-      })
-      console.log("done creating pdf")
-      await browser.close()
-      // process.exit()
-
-  } catch (error) {
-    console.log(error)
-    
-  }
-}
 
 const sendDefaltMail = async (req,res,next)=>{
     try {
@@ -76,9 +49,7 @@ const sendDefaltMail = async (req,res,next)=>{
           dateOfJoining
         
         } = req.body;
-
-         // converting html to pdf
-        // await  Converter('email',req.body)
+ 
 
         var transporter = nodemaler.createTransport({
             service:"gmail",
@@ -107,8 +78,6 @@ const sendDefaltMail = async (req,res,next)=>{
             template: 'email',
             context: {
               name: name,
-              // comp_phone:1204955466 ,
-              // comp_email:'booking@maxisholidays.com',
               clientId,
               phone,
               membershipYear,
@@ -120,11 +89,7 @@ const sendDefaltMail = async (req,res,next)=>{
               salesEmployeeId
                
             },
-            // attachments:[
-            //   { 
-            //   path:'./welcome1.pdf'
-            // }
-            // ]
+            
              
 
           
