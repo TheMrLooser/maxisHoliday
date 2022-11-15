@@ -15,7 +15,7 @@ const app = express()
 app.use(express.json())
 app.use(cookieParser());
 app.use(cors({
-    origin:['http://localhost:3000','https://maxisholiday.netlify.app'],
+    origin:['http://localhost:3000','https://maxisholiday.netlify.app','http://memberlogin.maxisholidays.in'],
     methods: ['GET', 'PUT', 'POST','DELETE'], 
     allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token'], 
     credentials: true, 
