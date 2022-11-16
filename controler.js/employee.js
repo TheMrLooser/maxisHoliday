@@ -78,12 +78,20 @@ const getAllEmployee = async(req,res,next)=>{
 
 const UpdateEmployeeDetaile = async(req,res,next)=>{
     try {
-        const checkEmployee= await EmployeeSchema.findOne({employeeId:req.body.employeeId});
-        if(checkEmployee){
-            await EmployeeSchema.findByIdAndUpdate(checkEmployee._id,{$set:{...req.body}});
-            return res.status(200).send("Employee Updated")
+        const {password,employeeId} = req.body
+        const checkEmployee= await EmployeeSchema.findOne({employeeId:employeeId});
+        if(!checkEmployee){
+            return res.status(404).send("Employee not found!")
         }
-        return res.status(404).send("Employee not found!")
+        await EmployeeSchema.findByIdAndUpdate(checkEmployee._id,{$set:{...req.body}});
+        if(password){
+            const newPassword = await bcrypt.hash(password,10)
+            await EmployeeSchema.findByIdAndUpdate(checkEmployee._id,{$set:{password:newPassword}});
+        }
+         
+            
+        return res.status(200).send("Employee Updated")
+       
     } catch (error) {
         return res.status(404).send(error)
     }
