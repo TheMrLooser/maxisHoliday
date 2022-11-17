@@ -16,6 +16,7 @@ const generateDaysAndNight=(membershipYear)=>{
 
 const RegisterNewClient = async(req,res,next)=>{
     try{
+        const {clientId} = req.body
         const check = await clientSchema.findOne({phone:req.body.phone});
         const salesEmployee = await employee.findOne({employeeId:req.body.salesEmployeeId})
         const paidAmount = parseInt(req.body.paidAmount,10)
@@ -25,14 +26,14 @@ const RegisterNewClient = async(req,res,next)=>{
             const membershipYear = req.body.membershipYear
             const getTotalAllowedDaysAndNight  = generateDaysAndNight(membershipYear)
             const  hashPassword  = await bcrypt.hash(phone.toString(),10);
-            const genrateUserId = randomstring.generate(
-                {
-                    length: 3, 
-                    charset: '1234567890'
-                }
-            ); 
+            // const genrateUserId = randomstring.generate(
+            //     {
+            //         length: 3, 
+            //         charset: '1234567890'
+            //     }
+            // );
             
-            const clientID = `MHC${genrateUserId}` 
+            // const clientID = `MHC${genrateUserId}` 
             const  balanceAmount = membershipAmount-paidAmount;
 
             const AMCStatus = req.body.AMCStatus
@@ -43,11 +44,11 @@ const RegisterNewClient = async(req,res,next)=>{
             const todaysDate = `${new Date().getDate()}-${new Date().getMonth()}-${new Date().getFullYear()}`
             const AMCObject = {AMC:AMC,Due:DueAMC,Status:AMCStatus,DateOfPaying:todaysDate ,AMCYear:currentYear}
 
-            const newUser = new clientSchema({...req.body,balanceAmount,paidAmount, password:hashPassword,clientId:clientID, totalAllowedDays:getTotalAllowedDaysAndNight.allowedDays,totalAllowedNights:getTotalAllowedDaysAndNight.allowedNight ,balanceDays:getTotalAllowedDaysAndNight.allowedDays,balanceNight:getTotalAllowedDaysAndNight.allowedNight,AMCList:AMCObject , DueAMC});
+            const newUser = new clientSchema({...req.body,balanceAmount,paidAmount, password:hashPassword,clientId, totalAllowedDays:getTotalAllowedDaysAndNight.allowedDays,totalAllowedNights:getTotalAllowedDaysAndNight.allowedNight ,balanceDays:getTotalAllowedDaysAndNight.allowedDays,balanceNight:getTotalAllowedDaysAndNight.allowedNight,AMCList:AMCObject , DueAMC});
             await newUser.save();
             
             await employee.findByIdAndUpdate(salesEmployee._id,{$push:{clients:clientID}})
-            const sendData = {clientId:clientID,password:phone,totalAllowedDays:getTotalAllowedDaysAndNight.allowedDays,totalAllowedNights:getTotalAllowedDaysAndNight.allowedNight}
+            const sendData = {clientId:clientId,password:phone,totalAllowedDays:getTotalAllowedDaysAndNight.allowedDays,totalAllowedNights:getTotalAllowedDaysAndNight.allowedNight}
             return res.status(200).send(sendData)
         }
         return res.status(202).send("Phone number is allready exist or You can't add new client ")
