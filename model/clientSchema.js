@@ -156,7 +156,7 @@ const clientSchema = new mongoose.Schema({
         type:String
     },
     AMC:{
-        type:Number,
+        type:Number ,
         default:0
     },
     AMCStatus:{
