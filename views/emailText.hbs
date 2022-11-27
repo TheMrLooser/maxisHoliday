@@ -1,51 +1,242 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    {{!-- <link rel="stylesheet" href="mail.css"> --}}
 
     <style>
         .mainContainer{
-            width: 100%;
-            font-size: 18px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .wrapper{
-            width: 100%;
-            max-width: 95%;
-        }
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+.wrapper{
+    width: 100%;
+    max-width: 80%;
+}
+.logoContianer{
+    width: 100%;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.logoContianer > img{
+    width: 150px;
+    height: 100px;
+}
+.heading{
+    font-size: 25px;
+}
+
+.detailWrapper > p{
+    text-align: justify;
+}
+table {
+    width: 100%;
+}
+ th,td{
+
+    border: 1px solid black;
+}
     </style>
+
 </head>
 <body>
-    <div class="mainContainer">
-    <div class="wrapper">
-            Dear, Mr. {{name}}, <br> <br> 
- 
-Greetings from Maxis Holidays!!! <br><br>
- 
-Welcome to Maxis Holidays. We are honored that you selected us to provide a million smiles to you and your family; therefore we assure you an abundance of joy on every holiday you enjoy with us. <br><br>
- 
-At Maxis Holidays, we believe that holidays are a time to spend with your family. They are also a time to have new adventures and explore new places. We want you to enjoy the taste of different cultures and experiences at our resorts. <br><br>
- 
-Our customer service team would be delighted to help you plan your dream holiday and answer any questions you may have about your package. Simply call {{comp_phone}} or email {{comp_email}}, and we'll take care of everything for you! <br><br>
- 
-We provide a Welcome Kit for our happy client that includes a Welcome Letter, Package certificate, and card, which will be delivered to your address in 30 days. <br><br>
- 
-Your vacation doesn't have to end when you check out. To help us serve you better next time and every time, please send your feedback to info@maxisholidays.in. <br><br>
- 
-We can't wait to welcome you and your family on holiday with us soon! <br><br>
- 
-Wishing you all the best this holiday season! <br><br><br>
- 
-Team Maxis Holidays <br>
-Member Relations
-    </div>
+     <div class="mainContainer" id="mainContainer">
+        <div class="wrapper">
+            <div class="logoContianer"><img src="https://maxisholidays.in/wp-content/uploads/2022/11/WhatsApp-Image-2022-07-24-at-10-300x137.png" alt=""></div>
+            <h3 class="heading">Dear {{name}}</h3>
+            <h3 class="heading">Maxis Holidays Member ID:{{clientId}}</h3>
+            <div class="detailContainer">
+                <div class="detailWrapper">
+                    <p>
+                        Maxis Holidays welcomes you on board. We are happy to inform you that you can now 
+                        accomplish your dream holidays with us. We are delighted to have you join us and our 
+                        constantly expanding family. We hope that your interaction with our Holiday Consultant and 
+                        Customer Service personnel would have immensely helped you and your family to set 
+                        course on this wonderful journey. We are committed towards making your membership 
+                        experience, one which truly gives you happiness and value for money.
+                    </p>
+                    <p>
+                        We look forward to your first holiday at our resorts. We are mindful of the fact that holidays 
+                        give you the much needed break and time to spend with your near and loved ones. Hence, 
+                        we have taken special care in ensuring adequate facilities and a highly service oriented 
+                        resort team. You may still choose to call us on 0120-4955466 or drop us an email 
+                        to {{bookingMailId}} for holiday reservations. For any other query, concern or 
+                        feedback, do write to us {{imfoMailId}} and we shall respond promptly, since we 
+                        value your experience and feedback the most as a Maxis Holidays Member.
+                    </p>
+                    <p>Cheers to the privileges as a Maxis Holidays Member.</p>
+                </div>
+            </div>
 
-    </div>
+
+            <h3 class="heading">Please find the below correct welcome E-letter and this letter will be considered for any future communication related to your membership account.</h3>
+
+            <h3 class="heading">Refer Annexure for your personal as well as Membership Details.</h3>
+
+            <table>
+                <tr>
+                    <th>Membership details</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <td>Member ID</td> 
+                    <td>{{clientId}}</td>
+                </tr>
+                <tr>
+                    <td>Member Name</td>
+                    <td>{{name}}</td>
+                </tr>
+                <tr>
+                    <td>Registered Email id </td>
+                    <td>{{email}}</td>
+                </tr>
+                <tr>
+                    <td>Registered phone No  </td>
+                    <td>{{phone}}</td>
+                </tr>
+                <tr>
+                    <td>Registered address  </td>
+                    <td>{{address}}</td>
+                </tr>
+                <tr>
+                    <td> DOB  </td>
+                    <td>{{DOB}}</td>
+                </tr>
+                <tr>
+                    <td>Tenure of Membership ( Years)  </td>
+                    <td>{{membershipYear}} years</td>
+                </tr>
+                <tr>
+                    <td>Membership Type </td>
+                    <td>{{membershipType}}</td>
+                </tr>
+                <tr>
+                    <td>Menbership Amount </td>
+                    <td>{{netAmount}}</td>
+                </tr>
+                <tr>
+                    <td>Paid Amount </td>
+                    <td>{{paidAmount}}</td>
+                </tr>
+                <tr>
+                    <td>Balance Amount </td>
+                    <td>{{balanceAmount}}</td>
+                </tr>
+                <tr>
+                    <td>state </td>
+                    <td>{{state}}</td>
+                </tr>
+                <tr>
+                    <td>city </td>
+                    <td>{{city}}</td>
+                </tr>
+                <tr>
+                    <td>Date Of Joining </td>
+                    <td>{{dateOfJoining}}</td>
+                </tr>
+                <tr>
+                    <td>Fathers Name </td>
+                    <td>{{fathersName}}</td>
+                </tr>
+                <tr>
+                    <td>Mothers Name </td>
+                    <td>{{mothersName}}</td>
+                </tr>
+                <tr>
+                    <td>Spouse Name </td>
+                    <td>{{spouseName}}</td>
+                </tr>
+                <tr>
+                    <td>Spouse DOB   </td>
+                    <td>{{spouseDOB}}</td>
+                </tr>
+                <tr>
+                    <td>Marriage Anniversary Date  </td>
+                    <td>{{MAD}}</td>
+                </tr>
+                <tr>
+                    <td>First Child Name </td>
+                    <td>{{firstChildName}}</td>
+                </tr>
+                <tr>
+                    <td>First Child DOB </td>
+                    <td>{{firstChildDOB}}</td>
+                </tr>
+                <tr>
+                    <td>Second Child Name </td>
+                    <td>{{secondChildName}}</td>
+                </tr>
+                <tr>
+                    <td>Second Child DOB </td>
+                    <td>{{secondChildDOB}}</td>
+                </tr>
+                <tr>
+                    <td>Third Child Name </td>
+                    <td>{{thirdChildName}}</td>
+                </tr>
+                <tr>
+                    <td>Third Child DOB </td>
+                    <td>{{thirdChildDOB}}</td>
+                </tr>
+                <tr>
+                    <td>AMC Status</td>
+                    <td>{{AMCStatus}}</td>
+                </tr>
+                <tr>
+                    <td>Due AMC  </td>
+                    <td>{{DueAMC}}</td>
+                </tr>
+                <tr>
+                    <td>Total no of Days </td>
+                    <td>{{noOfDays}}</td>
+                </tr>
+                <tr>
+                    <td>Total no of Nights </td>
+                    <td>{{noOfNight}}</td>
+                </tr>
+                <tr>
+                    <td>Balance no of Nights </td>
+                    <td>{{balanceNight}}</td>
+                </tr>
+                <tr>
+                    <td>Balance no of Days </td>
+                    <td>{{balanceDays}}</td>
+                </tr>
+                <tr>
+                    <td>Annual Mentainence Cost </td>
+                    <td>{{AMC}} </td>
+                </tr>
+                 
+                <tr>
+                    <td>Your Sales Manager's Id</td>
+                    <td>{{salesEmployeeId}} </td>
+                </tr>
+            </table>
+
+            <h6 class="T&C">
+                <h4> Terms and Conditions will be applicable.</h4>
+                Should you have any query with regards to your membership, please feel free to write back
+                to us <br>
+                We can't wait to welcome you and your family on holiday with us soon! <br>
+                Wishing you all the best this holiday season! <br>
+                Happy Holidays
+                <img src="" alt="" class="signatureImg">
+                <h4>Authorised Signatory</h4>
+            </h6>
+
+
+        </div>
+     </div>
+
+     
 </body>
 </html>

@@ -5,12 +5,13 @@ var hbs_2 = require('handlebars')
 const puppeteer = require("puppeteer");
 const fs = require('fs-extra');
 // const emailBody = require('../views/email.hbs')
+const clientSchema = require('../model/clientSchema');
 
  
 const SendMail = async(req,res,next)=>{
     try {
-        const {message,to,subject} = req.body;
-
+        const {to} = req.body;
+        const user = await clientSchema.findOne({email:to})
         const transpoter = nodemaler.createTransport({
             service:"gmail",
             auth:{  
@@ -19,11 +20,58 @@ const SendMail = async(req,res,next)=>{
             }
         })  
 
+        const handlebarOptions = {
+          viewEngine: {
+            extName: ".hbs",
+            partialsDir: path.resolve('./views'),
+            defaultLayout: false,
+          },
+          viewPath: path.resolve('./views'),
+          extName: ".hbs",
+        }
+
+        transpoter.use('compile', hbs(handlebarOptions));
+          
         const mailOptions = {
             from:process.env.EMAIL,
             to:to,
-            subject:subject,
-            html:`<p>${message}</p>`
+            subject:"Maxisholidays ",
+            template: 'emailText',
+            context: {
+              name:           user.name,
+              clientId:       user.clientId,
+              email:          user.email,
+              phone:          user.phone,
+              address:        user.address,
+              DOB:            user.DOB,
+              membershipYear: user.membershipYear,
+              membershipType: user.membershipType,
+              netAmount:      user.netAmount,
+              paidAmount:     user.paidAmount,
+              balanceAmount:  user.balanceAmount,
+              state:          user.state,
+              city:           user.city,
+              dateOfJoining:  user.dateOfJoining,
+              fathersName:    user.fathersName,
+              mothersName:    user.mothersName,
+              AMC:            user.AMC,
+              salesEmployeeId:user.salesEmployeeId,
+              noOfNight:      user.totalAllowedNights,
+              noOfDays:       user.totalAllowedDays,
+              balanceDays:    user.balanceDays,
+              balanceNight:   user.balanceNight, 
+              spouseName:     user.spouseName,
+              spouseDOB:      user.spouseDOB,
+              MAD:            user.marriageAnniversaryDate,
+              firstChildName: user.firstChildName,
+              firstChildDOB:  user.firstChildDOB,
+              secondChildName:user.secondChildName,
+              secondChildDOB: user.secondChildDOB,
+              thirdChildName: user.thirdChildName,
+              thirdChildDOB:  user.thirdChildDOB,
+              AMCStatus:      user.AMCStatus,
+              DueAMC:         user.DueAMC,
+            },
         }
  
 
@@ -31,22 +79,21 @@ const SendMail = async(req,res,next)=>{
             if(error){
                 return res.status(202).send(error)
             }
-            console.log('Mail sended' , info)
-            return res.status(200).send("Mail sended")
+            return res.status(200).send("Mail Sent")
         })
     } catch (error) {
         return res.status(404).send(error)
     }
 }
 
-
+ 
 
 const sendDefaltMail = async (req,res,next)=>{
     try {
         const {
           to,clientId ,name,email,phone,netAmount, 
           salesEmployeeId ,AMC,membershipType,membershipYear,
-          dateOfJoining
+          dateOfJoining,noOfDays,noOfNight
         
         } = req.body;
  
@@ -86,7 +133,9 @@ const sendDefaltMail = async (req,res,next)=>{
               AMC,
               netAmount,
               dateOfJoining,
-              salesEmployeeId
+              salesEmployeeId,
+              noOfNight,
+              noOfDays
                
             },
             
@@ -95,15 +144,11 @@ const sendDefaltMail = async (req,res,next)=>{
           
           };
           
-         
-
-
 
           transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
-              console.log(error);
+              return res.send({message:error})
             } else {
-                console.log('Email sent: ' + info.response);
                 return res.send('email sent')
             }
           });

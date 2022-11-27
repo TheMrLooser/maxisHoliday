@@ -4,19 +4,10 @@ const randomstring = require("randomstring");
 const bcrypt = require('bcryptjs');
 const employee = require('../model/employee.js');
 
-const generateDaysAndNight=(membershipYear)=>{
-    const allowedDays = 8*membershipYear;
-    const allowedNight = 7*membershipYear;
-
-    const holidayPack = {allowedDays,allowedNight};
-    return holidayPack
-
-}
-
-
+ 
 const RegisterNewClient = async(req,res,next)=>{
     try{
-        const {clientId} = req.body
+        const {clientId,totalAllowedNights,totalAllowedDays} = req.body
         const check = await clientSchema.findOne({phone:req.body.phone});
         const salesEmployee = await employee.findOne({employeeId:req.body.salesEmployeeId})
         const paidAmount = parseInt(req.body.paidAmount,10)
@@ -24,31 +15,22 @@ const RegisterNewClient = async(req,res,next)=>{
         if(!check && salesEmployee){
             const phone = req.body.phone;
             const membershipYear = req.body.membershipYear
-            const getTotalAllowedDaysAndNight  = generateDaysAndNight(membershipYear)
+             
             const  hashPassword  = await bcrypt.hash(phone.toString(),10);
-            // const genrateUserId = randomstring.generate(
-            //     {
-            //         length: 3, 
-            //         charset: '1234567890'
-            //     }
-            // ); 
-            
-            // const clientID = `MHC${genrateUserId}` 
             const  balanceAmount = membershipAmount-paidAmount;
-
             const AMCStatus = req.body.AMCStatus
             const currentYear = new Date().getFullYear()
-            const AMC = req.body.AMC
+            const AMC = req.body.AMC 
             const PaidAmc = req.body.PaidAMCAmount
             const DueAMC = AMC-PaidAmc
             const todaysDate = `${new Date().getDate()}-${new Date().getMonth()}-${new Date().getFullYear()}`
             const AMCObject = {AMC:AMC,Due:DueAMC,Status:AMCStatus,DateOfPaying:todaysDate ,AMCYear:currentYear}
 
-            const newUser = new clientSchema({...req.body,balanceAmount,paidAmount, password:hashPassword,clientId, totalAllowedDays:getTotalAllowedDaysAndNight.allowedDays,totalAllowedNights:getTotalAllowedDaysAndNight.allowedNight ,balanceDays:getTotalAllowedDaysAndNight.allowedDays,balanceNight:getTotalAllowedDaysAndNight.allowedNight,AMCList:AMCObject , DueAMC});
+            const newUser = new clientSchema({...req.body,balanceAmount,paidAmount, password:hashPassword,clientId, totalAllowedDays,totalAllowedNights,balanceDays:totalAllowedDays,balanceNight:totalAllowedNights,AMCList:AMCObject , DueAMC});
             await newUser.save();
             
             await employee.findByIdAndUpdate(salesEmployee._id,{$push:{clients:clientId}})
-            const sendData = {clientId:clientId,password:phone,totalAllowedDays:getTotalAllowedDaysAndNight.allowedDays,totalAllowedNights:getTotalAllowedDaysAndNight.allowedNight}
+            const sendData = {clientId:clientId,password:phone,totalAllowedDays,totalAllowedNights}
             return res.status(200).send(sendData)
         }
         return res.status(202).send("Phone number is allready exist or You can't add new client ")
@@ -213,10 +195,8 @@ const UpdateClientDetaile = async(req,res,next)=>{
             if(usingHolidayPackage){
                 const usedDays = parseInt(usingHolidayPackage.Days, 10);
                 const usedNight = parseInt(usingHolidayPackage.Nights, 10)
-                // const oneDayPrice = parseInt(usingHolidayPackage.OneDayPrice, 10)
                 const balanceDays = checkClient.totalAllowedDays - usedDays
                 const balanceNight = checkClient.totalAllowedNights - usedNight
-                // const balanceAmount = (checkClient.netAmount)-((usedDays+usedNight)*oneDayPrice)
                 await clientSchema.findByIdAndUpdate(checkClient._id,{$set:{ usedDays,usedNight,balanceDays, balanceNight}});
                 await clientSchema.findByIdAndUpdate(checkClient._id,{$push:{usingHolidayPackage}});
                 return res.status(200).send("Booking Registered ")
@@ -224,14 +204,11 @@ const UpdateClientDetaile = async(req,res,next)=>{
             }
             else if(MembershipType){
                 const newMembershipYear = parseInt(MembershipType.split(" ")[0])
-                const getTotalAllowedDaysAndNight  = generateDaysAndNight(newMembershipYear)
-                await clientSchema.findByIdAndUpdate(checkClient._id,{$set:{membershipType:MembershipType,membershipYear:newMembershipYear,totalAllowedDays:getTotalAllowedDaysAndNight.allowedDays, totalAllowedNights:getTotalAllowedDaysAndNight.allowedNight }})
-                
+                await clientSchema.findByIdAndUpdate(checkClient._id,{$set:{membershipType:MembershipType,membershipYear:newMembershipYear }})
                 return res.status(200).send("New Package Updated")
             }
             else if(AmcAmount){
                
-                // const currentYear = new Date().getFullYear()
                 const AMC = checkClient.AMC
                 const DueAMC = checkClient.DueAMC - AmcAmount
                 const Status = DueAMC>0?"Due":"Paid"
@@ -244,15 +221,9 @@ const UpdateClientDetaile = async(req,res,next)=>{
             }
 
             else if(PMA){
-                // console.log("working")
                 const paidAmount = parseInt(checkClient.paidAmount + PMA)
-                // console.log(paidAmount , typeof(paidAmount) ,PMA)
-
                 const balanceAmount = parseInt(checkClient.netAmount-paidAmount)
-                // console.log(balanceAmount , typeof(balanceAmount))
-
                 await clientSchema.findByIdAndUpdate(checkClient._id,{$set:{paidAmount ,balanceAmount}})
-                // console.log("working perfect")
                 
             }
             else if(noOfdays){
