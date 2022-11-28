@@ -9,6 +9,7 @@ const cors = require('cors')
 const cookieParser = require("cookie-parser");
 const requestHoliday = require('./Router/requestHoliday');
 const countriesDataRouter = require('./Router/sendCountryData');
+const { urlencoded } = require('body-parser');
 
 
 const app = express()

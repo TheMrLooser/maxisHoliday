@@ -188,11 +188,12 @@ const UpdateClientDetaile = async(req,res,next)=>{
         const checkClient = await clientSchema.findOne({clientId:req.body.clientId});
         const usingHolidayPackage = req.body.usingHolidayPackage;
         const AmcAmount = req.body.AmcAmount
+        const netAmount = req.body.netAmount
         const PMA = parseInt(req.body.DMA)
         const noOfdays = req.body.noOfdays
         if(checkClient){
             const MembershipType = req.body.membershipType
-            if(usingHolidayPackage){
+            if(usingHolidayPackage){ 
                 const usedDays = parseInt(usingHolidayPackage.Days, 10);
                 const usedNight = parseInt(usingHolidayPackage.Nights, 10)
                 const balanceDays = checkClient.totalAllowedDays - usedDays
@@ -229,6 +230,12 @@ const UpdateClientDetaile = async(req,res,next)=>{
             else if(noOfdays){
                 const totalNoOfNights = req.body.noOfNights
                 await clientSchema.findByIdAndUpdate(checkClient._id,{$set:{totalAllowedDays:noOfdays,totalAllowedNights:totalNoOfNights}})
+            }
+            else if(netAmount){
+                const PaidAmount = req.body.paidAmount
+                const balanceAmount = netAmount - parseInt(PaidAmount)
+                await clientSchema.findByIdAndUpdate(checkClient._id,{$set:{...req.body,balanceAmount,PaidAmount}});
+                return res.status(200).send("Client Updated")
             }
             await clientSchema.findByIdAndUpdate(checkClient._id,{$set:{...req.body}});
             return res.status(200).send("Client Updated")

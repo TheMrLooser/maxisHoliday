@@ -47,7 +47,7 @@ const LoginEmployee = async(req,res,next)=>{
         return res.status(404).send("Wrong EmployeeId!")
     } catch (error) {
          
-        return res.status(404).send(error)
+        return res.status(404).send(error) 
     }
 }
 
