@@ -37,7 +37,7 @@ const RegisterNewClient = async(req,res,next)=>{
     }catch(error){
         return res.status(404).send(error)
     } 
-};
+}; 
 
 const LoginClient = async(req,res,next)=>{
     try {
