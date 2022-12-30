@@ -7,15 +7,16 @@ const employee = require('../model/employee.js');
  
 const RegisterNewClient = async(req,res,next)=>{
     try{
-        const {clientId,totalAllowedNights,totalAllowedDays} = req.body
+        const {clientId,totalAllowedNights,totalAllowedDays,membershipYear} = req.body
         const check = await clientSchema.findOne({phone:req.body.phone});
         const salesEmployee = await employee.findOne({employeeId:req.body.salesEmployeeId})
         const paidAmount = parseInt(req.body.paidAmount,10)
         const membershipAmount = parseInt(req.body.netAmount,10)
         if(!check && salesEmployee){
             const phone = req.body.phone;
-            const membershipYear = req.body.membershipYear
-             
+            const totalNoOfAllowdNights =  totalAllowedNights*membershipYear
+            const totalNoOfAllowdDays = totalAllowedDays*membershipYear
+            
             const  hashPassword  = await bcrypt.hash(phone.toString(),10);
             const  balanceAmount = membershipAmount-paidAmount;
             const AMCStatus = req.body.AMCStatus
@@ -26,7 +27,7 @@ const RegisterNewClient = async(req,res,next)=>{
             const todaysDate = `${new Date().getDate()}-${new Date().getMonth()}-${new Date().getFullYear()}`
             const AMCObject = {AMC:AMC,Due:DueAMC,Status:AMCStatus,DateOfPaying:todaysDate ,AMCYear:currentYear}
 
-            const newUser = new clientSchema({...req.body,balanceAmount,paidAmount, password:hashPassword,clientId, totalAllowedDays,totalAllowedNights,balanceDays:totalAllowedDays,balanceNight:totalAllowedNights,AMCList:AMCObject , DueAMC});
+            const newUser = new clientSchema({...req.body,balanceAmount,paidAmount, password:hashPassword,clientId, totalAllowedDays,totalAllowedNights,balanceDays:totalNoOfAllowdDays,balanceNight:totalNoOfAllowdNights,AMCList:AMCObject , DueAMC});
             await newUser.save();
             
             await employee.findByIdAndUpdate(salesEmployee._id,{$push:{clients:clientId}})
@@ -47,7 +48,7 @@ const LoginClient = async(req,res,next)=>{
             const checkPassword  = await bcrypt.compare(password,check.password);
             if(checkPassword){
                 const Token = jwt.sign({id:check.phone},process.env.SECRET_KEY)
-                res.cookie("access_token",Token,{secure: true,sameSite: 'none',httpOnly:true}).status(200)
+                res.cookie("access_token",Token,{secure:true,sameSite: 'none',httpOnly:true}).status(200)
                 await clientSchema.findByIdAndUpdate(check._id,{$set:{token:Token}}) 
                 const {password ,_id ,__v,token,...others} = check._doc
                 return res.status(200).send(others)
